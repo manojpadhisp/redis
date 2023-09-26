@@ -1,0 +1,183 @@
+Caching Topics:
+===============
+
+	1. Introduction
+	2. Redis Cache Usage
+	3. Software Installation
+	4. Redis Cache Annotations
+	5. Examples with SpringBoot
+	6. Summary
+
+1. Introduction :
+   ==============
+
+	-->using caching we can improve the application performance and reduce the cost
+	-->There are so many caching frameworks are available in market, some of them are 
+	    Redis Cache, Guva Cache, ehcache, ..etc
+	
+2. Redis Cache:
+   ===========
+
+	-->Redis is a Remote Directory Server
+	-->It provides data structure such as String, Hases, List, Set, ..etc
+	-->Redis is written in C language
+
+   Used For:
+   ========
+
+	1. In memory database : It will act a nosql database and there are no tables, no sequneces..etc
+	
+	2. Cache : Used for increase our application performance
+
+	3. Message Queue : It is also used for pubs and subs model, where publisher can push the data and
+		           subscribers can get the data.
+
+
+  Software Installation:
+  =====================
+
+	-->It is an opensource software and it is in the form of zip file and .msi
+	-->Download Redis-x64-3.0.504.msi file, double click on next,next and finish the installation
+	-->How to start redis server
+
+		/redishome>redis-server.exe
+		/redishome>redis-cli.exe
+
+
+ How to connect to redis server using java application:
+ ======================================================
+
+<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+package com.manojpadhi;
+
+import java.util.List;
+import java.util.Set;
+
+import redis.clients.jedis.Jedis;
+
+public class RedisExample {
+	
+	public static void main(String[] args) {
+		
+		
+		Jedis jedis = new Jedis("localhost");
+		
+		System.out.println("Connection to server successfully");
+		
+		jedis.set("stech", "java realtime projects");
+		
+		//System.out.println(" values from stech key :"+jedis.get("stech"));
+		
+		jedis.lpush("stech1", "java realtime project");
+		jedis.lpush("stech1", ".net realtime project");
+		jedis.lpush("stech1", "angular realtime project");
+		
+		List<String> valuesList = jedis.lrange("stech1",0,2);
+		
+		for( String value : valuesList ) {
+			
+			//System.out.println(value);
+		}
+		
+		Set<String> keysList = jedis.keys("*");
+		
+		for( String keys : keysList ) {
+			
+			System.out.println(keys);
+		}
+		
+		
+	}
+
+}
+
+=============================================================================================================
+
+Redis Cache annotations :
+
+	There are 4 annotations are available in Redis Cache
+
+		1. @EnableCaching : 
+
+			-->This annotation should be displayed at the main class of our application
+			   in order to tell spring container that we need to enable a caching features in
+			   application
+
+		2. @Cacheable : 
+
+	  	-->This annotation is used to fetch/retrive/get the data from database to the application
+			   and store in Redis Cache
+		-->This annotation is used only on methods that retrive the data from the database
+		-->This annotation requires return value of the method that adds or updates data in the cache
+		-->It offers some attributes  like name, 
+
+		3. @CachePut : 
+
+			-->This annotation is sued to udpate the data in the redis cache while there is any
+			   update of data in database.
+
+			-->We can apply it on the methods that make modifications in database.
+
+
+		4. @CacheEvict : 
+
+			-->This annotation is used in order to remove the data in the Redis Cache while
+			   there is any removal of data in database.It can be used with void methods
+
+
+Redis Cache Implementation with SpringBoot:
+==========================================
+
+	#1. add the spring-boot-starter-redis-cache in pom.xml
+	#2. configure redis details like url, portno, in application.properties
+	#3. Add annotation @EnableCaching at starter class
+
+		
+
+Caching Requirements:
+====================
+
+ #1. Generic Requirements : 
+
+	a. Irrespective of the input the output will be common for all the users
+	b. for all the request response will be same. i.e. every user can get the data from the cache
+
+		ex : offeers will be common for all the users
+
+ #2. Based on the input/key   : 
+
+	a. The data will be varied from based on the input, here input is unique request 
+	    like customerid, cardnumber, emailid..etc 
+
+	b. If the input/key will be match in the caching then only get the data from the cache else it will
+	   goto backend system to get the data and store it. 
+
+
+ #3. Caching Timeout  : 
+
+	a. based on requirement of our application,we can set the time out for particular time
+           i.e. the data will be a live in specified time
+
+	b. The data will be removed from the cache automatically when the time will be expired.
+
+		
+=======================================================================================================
+
+
+
+		
+
+
+
+
+
+
+
+
+			
